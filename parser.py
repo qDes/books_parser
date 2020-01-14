@@ -19,8 +19,8 @@ def save_book_to_folder(book, filepath):
         f.write(book)
 
 
-def fetch_book_title(id_):
-    url = f"http://tululu.org/b{id_}/"
+def fetch_book_title(url):
+    #url = f"http://tululu.org/b{id_}/"
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
@@ -41,16 +41,22 @@ def download_txt(url, filename, folder='books/'):
     if not os.path.exists(folder):
         os.makedirs(folder)
     book = fetch_book(url)
-    filename = sanitize_filename(filename) + '.txt'
-    filepath = os.path.join(folder, filename)
-    save_book_to_folder(book, filepath)
-    return filepath
+    if book:
+        filename = sanitize_filename(filename) + '.txt'
+        filepath = os.path.join(folder, filename)
+        save_book_to_folder(book, filepath)
+        return filepath
+    return None
+
+
+def main():
+    for id_ in range(1,11):
+        download_url = f'http://tululu.org/txt.php?id={id_}'
+        book_page_url = f"http://tululu.org/b{id_}/"
+        book_name = fetch_book_title(book_page_url)
+        filepath = download_txt(download_url, book_name)
+        print(filepath)
 
 
 if __name__ == "__main__":
-    #soup = fetch_book_name()
-    for num in range(1,11):
-        book_name = fetch_book_title(num)
-        #book = fetch_book(num)
-        #if book:
-            #save_book_to_folder(book, 'books', num)
+    main()
