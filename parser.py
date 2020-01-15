@@ -76,17 +76,31 @@ def fetch_book_cover_url(soup):
         return None
 
 
+def fetch_book_comments(soup):
+    comments = []
+    try:
+        raw_comments = soup.find_all('div', class_='texts')
+        #print(raw_comments)
+        for raw_comment in raw_comments:
+            comments.append(raw_comment.find('span').text)
+    except AttributeError:
+        pass
+    return comments
+
+
 def main():
     for id_ in range(1,11):
         download_url = f'http://tululu.org/txt.php?id={id_}'
         book_page_url = f"http://tululu.org/b{id_}/"
         book_soup = fetch_book_soup(book_page_url)
         if book_soup:
-            book_name = fetch_book_title(book_soup)
-            print('Название', book_name)
-            book_cover_url = fetch_book_cover_url(book_soup)
-            filepath = download_image(book_cover_url) 
-            print('Ссылка на обложку', book_cover_url)
+            comments = fetch_book_comments(book_soup)
+            print('\n'.join(comments))
+            #book_name = fetch_book_title(book_soup)
+            #print('Название', book_name)
+            #book_cover_url = fetch_book_cover_url(book_soup)
+            #filepath = download_image(book_cover_url) 
+            #print('Ссылка на обложку', book_cover_url)
             print()
         '''
         filepath = download_txt(download_url, book_name)
