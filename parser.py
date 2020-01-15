@@ -55,6 +55,17 @@ def download_txt(url, filename, folder='books/'):
     return None
 
 
+def download_image(url, folder='covers/'):
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    filename = os.path.join(folder, url.split('/')[-1])
+    response = requests.get(url)
+    response.raise_for_status()
+    with open(filename, 'wb') as f:
+        f.write(response.content)
+    return filename
+
+
 def fetch_book_cover_url(soup):
     base_url = "http://tululu.org"
     try:
@@ -74,6 +85,7 @@ def main():
             book_name = fetch_book_title(book_soup)
             print('Название', book_name)
             book_cover_url = fetch_book_cover_url(book_soup)
+            filepath = download_image(book_cover_url) 
             print('Ссылка на обложку', book_cover_url)
             print()
         '''
