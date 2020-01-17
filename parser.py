@@ -4,7 +4,6 @@ import requests
 
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
-from parse_tululu_category import fetch_books_ids, fetch_book_soup
 
 
 def fetch_book(url):
@@ -16,7 +15,7 @@ def fetch_book(url):
 
 
 def save_book_to_folder(book, filepath):
-   with open(filepath, 'w') as f:
+    with open(filepath, 'w') as f:
         f.write(book)
 
 
@@ -88,7 +87,7 @@ def fetch_book_comments(soup):
 
 
 def fetch_book_genre(soup):
-    genre = []    
+    genre = []
     try:
         genre_selector = 'span.d_book a'
         genre = [genre.text for genre in soup.select(genre_selector)]
@@ -103,32 +102,5 @@ def save_books_description(description):
         f.write(description)
 
 
-
-def main():
-    books_description = []
-    books_ids = fetch_books_ids(1, 1)
-    for book_id in books_ids[:2]:
-        book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
-        book_page_url = f"http://tululu.org/b{book_id}/"
-        book_soup = fetch_book_soup(book_page_url)
-        if book_soup:
-            book_genre = fetch_book_genre(book_soup)
-            comments = fetch_book_comments(book_soup)
-            book_name = fetch_book_title(book_soup)
-            book_cover_url = fetch_book_cover_url(book_soup)
-            image_filepath = download_image(book_cover_url)
-            txt_filepath = download_txt(book_txt_url, book_name)
-            author = fetch_book_author(book_soup)
-            book_description = {"title": book_name, 
-                    "author": author,
-                    "img_src": image_filepath, 
-                    "book_path": txt_filepath,
-                    "comments": comments,
-                    "genre": book_genre,
-                    }
-            books_description.append(book_description)
-    # save_books_description(books_description)
-
-
 if __name__ == "__main__":
-    main()
+    pass
