@@ -2,7 +2,6 @@ import os
 import json
 import requests
 
-#from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
 from parse_tululu_category import fetch_books_ids, fetch_book_soup
@@ -22,13 +21,15 @@ def save_book_to_folder(book, filepath):
 
 
 def fetch_book_title(soup):
-    title = soup.find('body').find('h1').text
+    header_selector = 'body h1'
+    title = soup.select_one(header_selector).text
     title = title.split("::")[0].rstrip()
     return title
 
 
 def fetch_book_author(soup):
-    author = soup.find('body').find('h1').text
+    header_selector = 'body h1'
+    author = soup.select_one(header_selector).text
     author = author.split("::")[-1].lstrip()
     return author
 
@@ -67,7 +68,8 @@ def download_image(url, folder='images/'):
 def fetch_book_cover_url(soup):
     base_url = "http://tululu.org"
     try:
-        image_relative_url = soup.find('div', class_='bookimage').find('img').get('src')
+        image_selector = '.bookimage img'
+        image_relative_url = soup.select_one(image_selector).get('src')
         book_cover_url = urljoin(base_url, image_relative_url)
         return book_cover_url
     except AttributeError:
@@ -77,9 +79,9 @@ def fetch_book_cover_url(soup):
 def fetch_book_comments(soup):
     comments = []
     try:
-        raw_comments = soup.find_all('div', class_='texts')
-        for raw_comment in raw_comments:
-            comments.append(raw_comment.find('span').text)
+        comments_selector = '.texts .black'
+        comments = soup.select(comments_selector)
+        comments = [comment.text for comment in comments]
     except AttributeError:
         pass
     return comments
@@ -88,8 +90,8 @@ def fetch_book_comments(soup):
 def fetch_book_genre(soup):
     genre = []    
     try:
-        raw_genre = soup.find('span', class_='d_book').find_all('a')
-        genre = [gen.text for gen in raw_genre]
+        genre_selector = 'span.d_book a'
+        genre = [genre.text for genre in soup.select(genre_selector)]
     except AttributeError:
         pass
     return genre
@@ -104,8 +106,8 @@ def save_books_description(description):
 
 def main():
     books_description = []
-    books_ids = fetch_books_ids(1, 10)
-    for book_id in books_ids:
+    books_ids = fetch_books_ids(1, 1)
+    for book_id in books_ids[:2]:
         book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
         book_page_url = f"http://tululu.org/b{book_id}/"
         book_soup = fetch_book_soup(book_page_url)
@@ -125,7 +127,7 @@ def main():
                     "genre": book_genre,
                     }
             books_description.append(book_description)
-    save_books_description(books_description)
+    # save_books_description(books_description)
 
 
 if __name__ == "__main__":
