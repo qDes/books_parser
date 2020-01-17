@@ -1,13 +1,14 @@
 import os
+import json
 import requests
 
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
+from parse_tululu_category import fetch_books_ids, fetch_book_soup
 
 
 def fetch_book(url):
-    # url = f'http://tululu.org/txt.php?id={id_}'
     response = requests.get(url)
     response.raise_for_status()
     if url == response.url:
@@ -20,19 +21,16 @@ def save_book_to_folder(book, filepath):
         f.write(book)
 
 
-def fetch_book_soup(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    if url == response.url:
-        soup = BeautifulSoup(response.text, 'lxml')
-        return soup
-    return None
-
-
 def fetch_book_title(soup):
     title = soup.find('body').find('h1').text
     title = title.split("::")[0].rstrip()
     return title
+
+
+def fetch_book_author(soup):
+    author = soup.find('body').find('h1').text
+    author = author.split("::")[-1].lstrip()
+    return author
 
 
 def download_txt(url, filename, folder='books/'):
@@ -55,7 +53,7 @@ def download_txt(url, filename, folder='books/'):
     return None
 
 
-def download_image(url, folder='covers/'):
+def download_image(url, folder='images/'):
     if not os.path.exists(folder):
         os.makedirs(folder)
     filename = os.path.join(folder, url.split('/')[-1])
@@ -97,27 +95,37 @@ def fetch_book_genre(soup):
     return genre
 
 
+def save_books_description(description):
+    description = json.dumps(description)
+    with open('description', 'w') as f:
+        f.write(description)
+
+
+
 def main():
-    for id_ in range(1,11):
-        download_url = f'http://tululu.org/txt.php?id={id_}'
-        book_page_url = f"http://tululu.org/b{id_}/"
+    books_description = []
+    books_ids = fetch_books_ids(1, 10)
+    for book_id in books_ids:
+        book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
+        book_page_url = f"http://tululu.org/b{book_id}/"
         book_soup = fetch_book_soup(book_page_url)
         if book_soup:
             book_genre = fetch_book_genre(book_soup)
-            print(book_genre)
-            #comments = fetch_book_comments(book_soup)
-            #book_name = fetch_book_title(book_soup)
-            #book_cover_url = fetch_book_cover_url(book_soup)
-            #filepath = download_image(book_cover_url) 
-            print()
-        '''
-        filepath = download_txt(download_url, book_name)
-        if filepath:
+            comments = fetch_book_comments(book_soup)
+            book_name = fetch_book_title(book_soup)
             book_cover_url = fetch_book_cover_url(book_soup)
-            print(""filepath)
-            print(book_cover_url)
-        '''
-
+            image_filepath = download_image(book_cover_url)
+            txt_filepath = download_txt(book_txt_url, book_name)
+            author = fetch_book_author(book_soup)
+            book_description = {"title": book_name, 
+                    "author": author,
+                    "img_src": image_filepath, 
+                    "book_path": txt_filepath,
+                    "comments": comments,
+                    "genre": book_genre,
+                    }
+            books_description.append(book_description)
+    save_books_description(books_description)
 
 
 if __name__ == "__main__":
