@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 from parser import fetch_book_genre, fetch_book_comments
 from parser import fetch_book_title, fetch_book_cover_url
 from parser import download_image, download_txt
-from parser import fetch_book_author
+from parser import fetch_book_author, save_books_description
 
 
 def fetch_book_soup(url):
@@ -49,9 +49,13 @@ def fetch_books_ids(start_page, end_page):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--start_page", type=int)
-    parser.add_argument("--end_page", type=int, default=701)
+    parser = argparse.ArgumentParser(description="""
+                            parse books in category 
+                            from start page to end page""")
+    parser.add_argument("--start_page", type=int,
+                        help='start page number')
+    parser.add_argument("--end_page", type=int, default=701,
+                        help='end page number')
     args = parser.parse_args()
     return args.start_page, args.end_page
 
@@ -60,7 +64,7 @@ def main():
     books_description = []
     start_page, end_page = parse_args()
     books_ids = fetch_books_ids(start_page, end_page)
-    for book_id in books_ids[:2]:
+    for book_id in books_ids:
         book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
         book_page_url = f"http://tululu.org/b{book_id}/"
         book_soup = fetch_book_soup(book_page_url)
