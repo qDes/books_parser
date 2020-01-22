@@ -1,6 +1,7 @@
 images/
 books/
 description
+*.json
 *.swo
 *.txt
 *.swp
