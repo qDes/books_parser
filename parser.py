@@ -96,9 +96,9 @@ def fetch_book_genre(soup):
     return genre
 
 
-def save_books_description(description):
+def save_books_description(description, filename):
     description = json.dumps(description)
-    with open('description', 'w') as f:
+    with open(filename, 'w') as f:
         f.write(description)
 
 
