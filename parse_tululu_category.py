@@ -68,22 +68,19 @@ def main():
         book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
         book_page_url = f"http://tululu.org/b{book_id}/"
         book_soup = fetch_book_soup(book_page_url)
-        if book_soup:
-            book_genre = fetch_book_genre(book_soup)
-            comments = fetch_book_comments(book_soup)
-            book_name = fetch_book_title(book_soup)
-            book_cover_url = fetch_book_cover_url(book_soup)
-            image_filepath = download_image(book_cover_url)
-            txt_filepath = download_txt(book_txt_url, book_name)
-            author = fetch_book_author(book_soup)
-            book_description = {"title": book_name,
-                                "author": author,
-                                "img_src": image_filepath,
-                                "book_path": txt_filepath,
-                                "comments": comments,
-                                "genre": book_genre,
-                                }
-            books_description.append(book_description)
+        if not  book_soup:
+            continue
+        book_name = fetch_book_title(book_soup)
+        book_cover_url = fetch_book_cover_url(book_soup)
+        book_description = {"title": fetch_book_title(book_soup),
+                            "author": fetch_book_author(book_soup),
+                            "img_src": download_image(book_cover_url),
+                            "book_path": download_txt(book_txt_url, book_name),
+                            "comments": fetch_book_comments(book_soup),
+                            "genre": fetch_book_genre(book_soup),
+                            }
+        print(book_description)
+        books_description.append(book_description)
     save_books_description(books_description)
 
 
