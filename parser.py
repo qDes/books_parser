@@ -42,8 +42,7 @@ def download_txt(url, filename, folder='books/'):
     Returns:
         str: Путь до файла, куда сохранён текст.
     """
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    os.makedirs(folder, exist_ok=True)
     book = fetch_book(url)
     if book:
         filename = sanitize_filename(filename) + '.txt'
@@ -54,8 +53,7 @@ def download_txt(url, filename, folder='books/'):
 
 
 def download_image(url, folder='images/'):
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    os.makedirs(folder, exist_ok=True)
     filename = os.path.join(folder, url.split('/')[-1])
     response = requests.get(url)
     response.raise_for_status()
