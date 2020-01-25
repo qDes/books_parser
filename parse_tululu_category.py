@@ -2,11 +2,12 @@ import argparse
 import requests
 
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from configargparse import ArgParser
 from parser import fetch_book_genre, fetch_book_comments
 from parser import fetch_book_title, fetch_book_cover_url
 from parser import download_image, download_txt
 from parser import fetch_book_author, save_books_description
+from urllib.parse import urljoin
 
 
 def fetch_book_soup(url):
@@ -49,20 +50,18 @@ def fetch_books_ids(start_page, end_page):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="""
-                            parse books in category 
-                            from start page to end page""")
-    parser.add_argument("--start_page", type=int,
-                        help='start page number')
-    parser.add_argument("--end_page", type=int, default=701,
-                        help='end page number')
+    parser = ArgParser(default_config_files=['.env'])
+    parser.add("--start_page", required=True, type=int)
+    parser.add("--end_page", type=int, default=701)
+    parser.add("--file", required=True,
+               help="books description file")
     args = parser.parse_args()
-    return args.start_page, args.end_page
+    return args.start_page, args.end_page, args.file
 
 
 def main():
     books_description = []
-    start_page, end_page = parse_args()
+    start_page, end_page, description_file = parse_args()
     books_ids = fetch_books_ids(start_page, end_page)
     for book_id in books_ids:
         book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
@@ -79,9 +78,8 @@ def main():
                             "comments": fetch_book_comments(book_soup),
                             "genre": fetch_book_genre(book_soup),
                             }
-        print(book_description)
         books_description.append(book_description)
-    save_books_description(books_description)
+    save_books_description(books_description, description_file)
 
 
 if __name__ == "__main__":
