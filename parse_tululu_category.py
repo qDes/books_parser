@@ -70,7 +70,7 @@ def main():
         if not  book_soup:
             continue
         book_name = fetch_book_title(book_soup)
-        book_cover_url = fetch_book_cover_url(book_soup)
+        book_cover_url = fetch_book_cover_url(book_soup, book_page_url)
         book_description = {"title": fetch_book_title(book_soup),
                             "author": fetch_book_author(book_soup),
                             "img_src": download_image(book_cover_url),
