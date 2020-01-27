@@ -62,13 +62,14 @@ def download_image(url, folder='images/'):
     return filename
 
 
-def fetch_book_cover_url(soup):
+def fetch_book_cover_url(soup, book_url):
     base_url = "http://tululu.org"
     try:
         image_selector = '.bookimage img'
-        image_relative_url = soup.select_one(image_selector).get('src')
-        book_cover_url = urljoin(base_url, image_relative_url)
-        return book_cover_url
+        image_url = soup.select_one(image_selector).get('src')
+        if image_url[0] == '/':
+            return urljoin(base_url, image_url)
+        return urljoin(book_url, image_url)
     except AttributeError:
         return None
 
