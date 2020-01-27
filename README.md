@@ -13,9 +13,9 @@ pip3 install -r requirements.txt
 ### Использование
 Запуск скрипта:
 ```
-python3 parse_tululu_category.py --start_page %start_page% --end_page %end_page%
+python3 parse_tululu_category.py --start_page %start_page% --end_page %end_page% --file %description.json%
 ```
-При запуске скрипта указывается первая и послденяя страница библиотеки сайта(если не указывать аргумент end_page парсер пройдёт до последней страницы - 701).<br>
+При запуске скрипта указывается первая и последняя страница библиотеки сайта(если не указывать аргумент end_page парсер пройдёт до последней страницы - 701), аргумент file указывает на файл описания библиотеки.<br>
 После работы программы папка ```books/``` содержит книги, папка ```images/``` - обложки книг, файл ```description.json``` - описание скачанной библиотеки. 
 Структура файла с описание библиотеки:
 ```json
@@ -28,7 +28,7 @@ python3 parse_tululu_category.py --start_page %start_page% --end_page %end_page%
       "comments": ["комментарий1", "комментарий2"],
       "genres": ["жанр1", "жанр2"]
   }, 
-  ...
+
 ]
 ```
 
