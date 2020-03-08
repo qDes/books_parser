@@ -24,10 +24,8 @@ def fetch_books_urls(url):
     base_url = "http://tululu.org/"
     book_soup = fetch_book_soup(url)
     book_cards = book_soup.select(".d_book")
-    for book_card in book_cards:
-        href = book_card.select_one("a").get('href')
-        book_url = urljoin(base_url, href)
-        books_urls.append(book_url)
+    books_urls = [urljoin(base_url, book_card.select_one("a").get('href')) 
+            for book_card in book_cards]
     return books_urls
 
 
