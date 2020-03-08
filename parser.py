@@ -33,7 +33,7 @@ def fetch_book_author(soup):
     return author
 
 
-def download_txt(url, filename, folder='books/'):
+def download_txt(url, filename, folder='books'):
     """Функция для скачивания текстовых файлов.
     Args:
         url (str): Cсылка на текст, который хочется скачать.
@@ -100,6 +100,3 @@ def save_books_description(description, filename):
     with open(filename, 'w') as f:
         f.write(description)
 
-
-if __name__ == "__main__":
-    pass
