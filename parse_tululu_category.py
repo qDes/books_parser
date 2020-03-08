@@ -23,9 +23,9 @@ def fetch_books_urls(url):
     books_urls = []
     base_url = "http://tululu.org/"
     book_soup = fetch_book_soup(url)
-    book_cards = book_soup.find_all('table', class_='d_book')
+    book_cards = book_soup.select(".d_book")
     for book_card in book_cards:
-        href = book_card.find('a').get('href')
+        href = book_card.select_one("a").get('href')
         book_url = urljoin(base_url, href)
         books_urls.append(book_url)
     return books_urls
@@ -56,12 +56,13 @@ def parse_args():
     parser.add("--file", required=True,
                help="books description file")
     args = parser.parse_args()
-    return args.start_page, args.end_page, args.file
+    return args
 
 
 def main():
     books_description = []
-    start_page, end_page, description_file = parse_args()
+    args = parse_args()
+    start_page, end_page, description_file = args.start_page, args.end_page, args.file
     books_ids = fetch_books_ids(start_page, end_page)
     for book_id in books_ids:
         book_txt_url = f'http://tululu.org/txt.php?id={book_id}'
