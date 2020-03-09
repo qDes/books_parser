@@ -52,7 +52,7 @@ def download_txt(url, filename, folder='books'):
     return None
 
 
-def download_image(url, folder='images/'):
+def download_image(url, folder='images'):
     os.makedirs(folder, exist_ok=True)
     filename = os.path.join(folder, url.split('/')[-1])
     response = requests.get(url)
