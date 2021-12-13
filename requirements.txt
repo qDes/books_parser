@@ -1,5 +1,5 @@
 ConfigArgParse==1.0
 requests==2.22.0
 beautifulsoup4==4.8.2
-lxml==4.4.2
+lxml==4.6.5
 pathvalidate==2.0.1
